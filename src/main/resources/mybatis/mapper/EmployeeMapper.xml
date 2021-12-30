@@ -9,4 +9,9 @@
         SELECT * FROM employee;
     </select>
 
+    <select id="addEmployee">
+        INSERT INTO employee (사번, 이름, 입사년월일, 국적, 생년월일, 성별, 우편번호, 주소, 상세주소, 휴대폰번호, 이메일, 부서, 직급, 직종)
+        VALUES(#{id}, #{name}, #{joinDate}, #{country}, #{birthday}, #{gender}, #{zipCode}, #{address}, #{addressDetail}, #{phoneNumber}, #{email}, #{department}, #{rank}, #{occupation});
+    </select>
+
 </mapper>
