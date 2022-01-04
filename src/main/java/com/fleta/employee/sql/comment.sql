@@ -1,8 +1,0 @@
-CREATE TABLE comment (
-	사번 VARCHAR(10) PRIMARY KEY NOT NULL UNIQUE,
-    비고 VARCHAR(1000),
-    CONSTRAINT comment_constraint
-    FOREIGN KEY(사번)
-    REFERENCES auth(사번)
-    ON DELETE CASCADE
-);
