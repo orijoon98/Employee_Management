@@ -9,5 +9,8 @@ import java.util.List;
 @Repository
 @Mapper
 public interface EmployeeMapper {
-    List<Employee> getAllEmployee();
+
+    public List<Employee> getAllEmployee();
+    public void createEmployee(Employee employee);
+    public void deleteEmployee(String 사번);
 }

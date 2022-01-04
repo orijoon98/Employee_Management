@@ -6,6 +6,7 @@ import java.util.Date;
 
 @Data
 public class Employee {
+
     private String 사번;
     private String 비밀번호;
     private String 사진;
