@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fleta.employee.model.dao.BankMapper">
+
+    <insert id="createBank" parameterType="Bank">
+        INSERT INTO bank (사번, 급여이체은행, 계좌번호, 예금주)
+        VALUES      (#{사번}, #{급여이체은행}, #{계좌번호}, #{예금주});
+    </insert>
+
+    <delete id="deleteBank" parameterType="String">
+        DELETE FROM bank
+        WHERE 사번 = #{사번};
+    </delete>
+
+</mapper>

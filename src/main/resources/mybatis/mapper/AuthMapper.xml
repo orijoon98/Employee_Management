@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fleta.employee.model.dao.AuthMapper">
+
+    <insert id="createAuth" parameterType="Auth">
+        INSERT INTO auth (사번, 비밀번호)
+        VALUES      (#{사번}, #{비밀번호});
+    </insert>
+
+    <delete id="deleteAuth" parameterType="String">
+        DELETE FROM auth
+        WHERE 사번 = #{사번};
+    </delete>
+
+</mapper>

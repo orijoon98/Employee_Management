@@ -12,7 +12,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/employee")
 public class EmployeeController {
-
     private final EmployeeService employeeService;
 
     @GetMapping("/all")
