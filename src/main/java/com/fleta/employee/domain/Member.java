@@ -10,19 +10,27 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
-    @Column(unique = true)
+    @Column(name = "login_id", nullable = false, unique = true)
     private String loginId;
+
     @JsonIgnore
+    @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "name", nullable = false)
     private String name;
-    @Column(unique = true)
+
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
+
     @Enumerated(value = EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private Role role;
 
     @Builder
@@ -32,5 +40,7 @@ public class Member extends BaseEntity {
         this.name = name;
         this.email = email;
         this.role = role;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 }
