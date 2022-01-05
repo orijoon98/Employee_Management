@@ -12,13 +12,15 @@ import java.time.LocalDateTime;
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
-    @CreatedDate
-    @Column(name = "create_at", nullable = false, updatable = false)
-    protected LocalDateTime createdAt;
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    protected LocalDateTime updatedAt;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @CreatedDate
+    @Column(name = "create_at", nullable = false, updatable = false)
+    protected LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at", nullable = false)
+    protected LocalDateTime updatedAt;
 }

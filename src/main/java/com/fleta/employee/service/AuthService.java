@@ -2,10 +2,7 @@ package com.fleta.employee.service;
 
 import com.fleta.employee.domain.Member;
 import com.fleta.employee.domain.Role;
-import com.fleta.employee.exception.DuplicateMemberException;
-import com.fleta.employee.exception.InvalidBlankPasswordException;
-import com.fleta.employee.exception.InvalidRegexPasswordException;
-import com.fleta.employee.exception.NotExistMemberException;
+import com.fleta.employee.exception.*;
 import com.fleta.employee.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +21,7 @@ public class AuthService {
 
     public Member signUpNonMember(String loginId, String password, String name, String email) {
         checkDuplicateMember(loginId);
+        checkDuplicateEmail(email);
         checkValidPassword(password);
 
         Member member = Member.builder()
@@ -34,17 +32,19 @@ public class AuthService {
                 .role(Role.ROLE_NOT_PERMITTED)
                 .build();
 
-        System.out.println(member);
+        System.out.println(member.getCreatedAt());
         return memberRepository.save(member);
-    }
-
-    public Member findMemberByLoginId(String loginId) {
-        return memberRepository.findByLoginId(loginId).orElseThrow(NotExistMemberException::new);
     }
 
     private void checkDuplicateMember(String loginId) {
         memberRepository.findByLoginId(loginId).ifPresent(m -> {
             throw new DuplicateMemberException();
+        });
+    }
+
+    private void checkDuplicateEmail(String email) {
+        memberRepository.findByEmail(email).ifPresent(m -> {
+            throw new DuplicateEmailException();
         });
     }
 
