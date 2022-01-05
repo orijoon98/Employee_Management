@@ -14,22 +14,23 @@ import javax.persistence.Enumerated;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Auth extends Base {
-    @Column(nullable = false, unique = true)
-    private String 사번;
-
+public class Member extends BaseEntity {
+    @Column(unique = true)
+    private String loginId;
     @JsonIgnore
-    @Column(nullable = false)
-    private String 비밀번호;
-
-    @Column(nullable = false)
+    private String password;
+    private String name;
+    @Column(unique = true)
+    private String email;
     @Enumerated(value = EnumType.STRING)
-    private Role 등급;
+    private Role role;
 
     @Builder
-    public Auth(String 사번, String 비밀번호, Role 등급) {
-        this.사번 = 사번;
-        this.비밀번호 = 비밀번호;
-        this.등급 = 등급;
+    public Member(String loginId, String password, String name, String email, Role role) {
+        this.loginId = loginId;
+        this.password = password;
+        this.name = name;
+        this.email = email;
+        this.role = role;
     }
 }
