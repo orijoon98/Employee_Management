@@ -1,4 +1,4 @@
-package com.fleta.employee.domain;
+package com.fleta.employee.entity;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

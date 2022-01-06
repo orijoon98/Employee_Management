@@ -1,14 +1,16 @@
 package com.fleta.employee.service;
 
-import com.fleta.employee.domain.Member;
-import com.fleta.employee.domain.Role;
+import com.fleta.employee.entity.User;
+import com.fleta.employee.enums.Authority;
 import com.fleta.employee.exception.*;
-import com.fleta.employee.repository.MemberRepository;
+import com.fleta.employee.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,33 +19,43 @@ import java.util.regex.Pattern;
 @Transactional
 @Slf4j
 public class AuthService {
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public Member signUpNonMember(String loginId, String password, String name, String email) {
+    public User signup(String loginId, String password, String name, String email) {
         checkDuplicateMember(loginId);
         checkDuplicateEmail(email);
         checkValidPassword(password);
 
-        Member member = Member.builder()
+        User user = User.builder()
                 .loginId(loginId)
-                .password(password)
+                .password(passwordEncoder.encode(password))
                 .name(name)
                 .email(email)
-                .role(Role.ROLE_NOT_PERMITTED)
+                .authority(Authority.ROLE_NOT_PERMITTED)
                 .build();
 
-        System.out.println(member.getCreatedAt());
-        return memberRepository.save(member);
+        return userRepository.save(user);
+    }
+
+    public User login(String loginId, String password) {
+        Optional<User> member = userRepository.findByLoginId(loginId);
+        if(member.isEmpty()) throw new NotExistLoginIdException();
+        member.ifPresent(m -> {
+            if(!passwordEncoder.matches(password, m.getPassword()))
+                throw new InvalidPasswordException();
+        });
+        return member.get();
     }
 
     private void checkDuplicateMember(String loginId) {
-        memberRepository.findByLoginId(loginId).ifPresent(m -> {
+        userRepository.findByLoginId(loginId).ifPresent(m -> {
             throw new DuplicateMemberException();
         });
     }
 
     private void checkDuplicateEmail(String email) {
-        memberRepository.findByEmail(email).ifPresent(m -> {
+        userRepository.findByEmail(email).ifPresent(m -> {
             throw new DuplicateEmailException();
         });
     }

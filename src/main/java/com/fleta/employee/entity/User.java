@@ -1,6 +1,7 @@
-package com.fleta.employee.domain;
+package com.fleta.employee.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fleta.employee.enums.Authority;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseEntity {
+public class User extends BaseEntity {
     @Column(name = "login_id", nullable = false, unique = true)
     private String loginId;
 
@@ -30,16 +31,16 @@ public class Member extends BaseEntity {
     private String email;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private Role role;
+    @Column(name = "authority", nullable = false)
+    private Authority authority;
 
     @Builder
-    public Member(String loginId, String password, String name, String email, Role role) {
+    public User(String loginId, String password, String name, String email, Authority authority) {
         this.loginId = loginId;
         this.password = password;
         this.name = name;
         this.email = email;
-        this.role = role;
+        this.authority = authority;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }

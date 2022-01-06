@@ -16,9 +16,11 @@ public class ExceptionController {
             DuplicateEmailException.class,
             InvalidBlankPasswordException.class,
             InvalidRegexPasswordException.class,
+            NotExistLoginIdException.class,
+            InvalidPasswordException.class
     })
-    public ResponseEntity<Object> BadRequestException(final RuntimeException ex) {
-        log.warn("error", ex);
+    public ResponseEntity BadRequestException(final RuntimeException ex) {
+        log.warn(ex.getMessage(), ex);
         return ResponseEntity.status(400).body(ex.getMessage());
     }
 
@@ -26,8 +28,8 @@ public class ExceptionController {
     @ExceptionHandler({
             Exception.class
     })
-    public ResponseEntity<Object> HandleAllException(final Exception ex) {
-        log.error("error", ex);
+    public ResponseEntity HandleAllException(final Exception ex) {
+        log.error(ex.getMessage(), ex);
         return ResponseEntity.status(500).body(ex.getMessage());
     }
 }
