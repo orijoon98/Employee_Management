@@ -4,6 +4,8 @@ import com.fleta.employee.entity.User;
 import com.fleta.employee.enums.Authority;
 import com.fleta.employee.exception.*;
 import com.fleta.employee.repository.UserRepository;
+import com.fleta.employee.util.EmailUtil;
+import com.fleta.employee.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +24,8 @@ import java.util.regex.Pattern;
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RedisUtil redisUtil;
+    private final EmailUtil emailUtil;
 
     public User signup(String loginId, String password, String name, String email) {
         checkDuplicateMember(loginId);
@@ -47,6 +52,30 @@ public class AuthService {
         });
 
         return member.get();
+    }
+
+    public void sendVerificationMail(User user) {
+        String VERIFICATION_LINK = "http://localhost:8080/auth/verify/";
+        UUID uuid = UUID.randomUUID();
+        redisUtil.setDataExpire(uuid.toString(), user.getLoginId(), 1000L * 60 * 3); // 3분
+        emailUtil.sendMail(user.getEmail(), "회원가입 인증메일입니다.", VERIFICATION_LINK + uuid.toString());
+    }
+
+    public void verifyEmail(String key) {
+        String loginId = redisUtil.getData(key);
+        Optional<User> user = userRepository.findByLoginId(loginId);
+        modifyUserRole(user.get(), Authority.ROLE_USER);
+        redisUtil.deleteData(key);
+    }
+
+    public User findByLoginId(String loginId) {
+        Optional<User> user = userRepository.findByLoginId(loginId);
+        return user.get();
+    }
+
+    public void modifyUserRole(User user, Authority authority) {
+        user.setAuthority(authority);
+        userRepository.save(user);
     }
 
     private void checkDuplicateMember(String loginId) {

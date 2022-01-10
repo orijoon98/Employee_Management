@@ -28,6 +28,7 @@ public class User extends BaseEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Setter
     @Enumerated(value = EnumType.STRING)
     @Column(name = "authority", nullable = false)
     private Authority authority;
