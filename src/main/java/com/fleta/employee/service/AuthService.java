@@ -45,6 +45,7 @@ public class AuthService {
             if(!passwordEncoder.matches(password, m.getPassword()))
                 throw new InvalidPasswordException();
         });
+
         return member.get();
     }
 

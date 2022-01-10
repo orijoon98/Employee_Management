@@ -1,5 +1,6 @@
 package com.fleta.employee.controller;
 
+import com.fleta.employee.dto.ErrorDto;
 import com.fleta.employee.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,12 @@ public class ExceptionController {
     })
     public ResponseEntity BadRequestException(final RuntimeException ex) {
         log.warn(ex.getMessage(), ex);
-        return ResponseEntity.status(400).body(ex.getMessage());
+        return ResponseEntity.status(400).body(
+                ErrorDto.builder()
+                        .status(400)
+                        .message(ex.getMessage())
+                        .build()
+        );
     }
 
     //500
@@ -30,6 +36,11 @@ public class ExceptionController {
     })
     public ResponseEntity HandleAllException(final Exception ex) {
         log.error(ex.getMessage(), ex);
-        return ResponseEntity.status(500).body(ex.getMessage());
+        return ResponseEntity.status(500).body(
+                ErrorDto.builder()
+                        .status(500)
+                        .message(ex.getMessage())
+                        .build()
+        );
     }
 }

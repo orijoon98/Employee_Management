@@ -1,4 +1,4 @@
-package com.fleta.employee.dto;
+package com.fleta.employee.dto.auth.request;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class LoginDto {
+public class LoginReqDto {
     private String loginId;
     private String password;
 
     @Builder
-    public LoginDto(String loginId, String password) {
+    public LoginReqDto(String loginId, String password) {
         this.loginId = loginId;
         this.password = password;
     }

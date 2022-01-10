@@ -1,7 +1,8 @@
 package com.fleta.employee.controller;
 
-import com.fleta.employee.dto.LoginDto;
-import com.fleta.employee.dto.SignupDto;
+import com.fleta.employee.dto.auth.request.LoginReqDto;
+import com.fleta.employee.dto.ResponseDto;
+import com.fleta.employee.dto.auth.request.SignupReqDto;
 import com.fleta.employee.entity.User;
 import com.fleta.employee.service.AuthService;
 import com.fleta.employee.util.CookieUtil;
@@ -18,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @ControllerAdvice
 @Slf4j
@@ -29,27 +30,33 @@ public class AuthController {
     private final RedisUtil redisUtil;
 
     @PostMapping("/signup")
-    public ResponseEntity signup(@RequestBody SignupDto signupDto) {
+    public ResponseEntity signup(@RequestBody SignupReqDto signupReqDto) {
         RequestUtil.checkNeedValue(
-                signupDto.getLoginId(),
-                signupDto.getPassword(),
-                signupDto.getName(),
-                signupDto.getEmail()
+                signupReqDto.getLoginId(),
+                signupReqDto.getPassword(),
+                signupReqDto.getName(),
+                signupReqDto.getEmail()
         );
 
-        final User user = authService.signup(signupDto.getLoginId(), signupDto.getPassword(), signupDto.getName(), signupDto.getEmail());
+        final User user = authService.signup(signupReqDto.getLoginId(), signupReqDto.getPassword(), signupReqDto.getName(), signupReqDto.getEmail());
 
-        return ResponseEntity.status(200).body(user);
+        return ResponseEntity.status(200).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("회원가입 성공")
+                        .data(user)
+                        .build()
+        );
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginDto loginDto, HttpServletRequest req, HttpServletResponse res) {
+    public ResponseEntity login(@RequestBody LoginReqDto loginReqDto, HttpServletRequest req, HttpServletResponse res) {
         RequestUtil.checkNeedValue(
-            loginDto.getLoginId(),
-            loginDto.getPassword()
+            loginReqDto.getLoginId(),
+            loginReqDto.getPassword()
         );
 
-        final User user = authService.login(loginDto.getLoginId(), loginDto.getPassword());
+        final User user = authService.login(loginReqDto.getLoginId(), loginReqDto.getPassword());
         final String token = jwtUtil.generateToken(user);
         final String refreshJwt = jwtUtil.generateRefreshToken(user);
         Cookie accessToken = cookieUtil.createCookie(JwtUtil.ACCESS_TOKEN_NAME, token);
@@ -58,6 +65,13 @@ public class AuthController {
         res.addCookie(accessToken);
         res.addCookie(refreshToken);
 
-        return ResponseEntity.status(200).body(token);
+        return ResponseEntity.status(200).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("로그인 성공")
+                        .data(token)
+                        .build()
+        );
     }
+
 }
