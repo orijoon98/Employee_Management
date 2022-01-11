@@ -1,5 +1,6 @@
 package com.fleta.employee.controller;
 
+import com.fleta.employee.dto.auth.request.DeleteReqDto;
 import com.fleta.employee.dto.auth.request.LoginReqDto;
 import com.fleta.employee.dto.ResponseDto;
 import com.fleta.employee.dto.auth.request.SignupReqDto;
@@ -70,6 +71,22 @@ public class AuthController {
                         .status(200)
                         .message("로그인 성공")
                         .data(token)
+                        .build()
+        );
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity delete(@RequestBody DeleteReqDto deleteReqDto) {
+        RequestUtil.checkNeedValue(
+                deleteReqDto.getLoginId()
+        );
+        authService.delete(deleteReqDto.getLoginId());
+
+        return ResponseEntity.status(200).body(
+                ResponseDto.builder()
+                        .status(200)
+                        .message("회원 탈퇴 성공")
+                        .data(null)
                         .build()
         );
     }

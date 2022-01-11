@@ -1,8 +1,12 @@
 package com.fleta.employee.service;
 
+import com.fleta.employee.entity.PrivateInformation;
+import com.fleta.employee.entity.PublicInformation;
 import com.fleta.employee.entity.User;
 import com.fleta.employee.enums.Authority;
 import com.fleta.employee.exception.*;
+import com.fleta.employee.repository.PrivateInformationRepository;
+import com.fleta.employee.repository.PublicInformationRepository;
 import com.fleta.employee.repository.UserRepository;
 import com.fleta.employee.util.EmailUtil;
 import com.fleta.employee.util.RedisUtil;
@@ -12,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -23,6 +28,8 @@ import java.util.regex.Pattern;
 @Slf4j
 public class AuthService {
     private final UserRepository userRepository;
+    private final PublicInformationRepository publicInformationRepository;
+    private final PrivateInformationRepository privateInformationRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisUtil redisUtil;
     private final EmailUtil emailUtil;
@@ -32,12 +39,23 @@ public class AuthService {
         checkDuplicateEmail(email);
         checkValidPassword(password);
 
+        PublicInformation publicInformation = PublicInformation.builder()
+                .build();
+
+        PrivateInformation privateInformation = PrivateInformation.builder()
+                .build();
+
+        publicInformationRepository.save(publicInformation);
+        privateInformationRepository.save(privateInformation);
+
         User user = User.builder()
                 .loginId(loginId)
                 .password(passwordEncoder.encode(password))
                 .name(name)
                 .email(email)
                 .authority(Authority.ROLE_NOT_PERMITTED)
+                .publicInformation(publicInformation)
+                .privateInformation(privateInformation)
                 .build();
 
         return userRepository.save(user);
@@ -47,11 +65,21 @@ public class AuthService {
         Optional<User> member = userRepository.findByLoginId(loginId);
         if(member.isEmpty()) throw new NotExistLoginIdException();
         member.ifPresent(m -> {
-            if(!passwordEncoder.matches(password, m.getPassword()))
+            if(!(passwordEncoder.matches(password, m.getPassword())
+            || password.equals(m.getPassword())))
                 throw new InvalidPasswordException();
         });
 
         return member.get();
+    }
+
+    public void delete(String loginId) {
+        Optional<User> user = userRepository.findByLoginId(loginId);
+        PublicInformation publicInformation = user.get().getPublicInformation();
+        PrivateInformation privateInformation = user.get().getPrivateInformation();
+        userRepository.delete(user.get());
+        publicInformationRepository.delete(publicInformation);
+        privateInformationRepository.delete(privateInformation);
     }
 
     public void sendVerificationMail(User user) {
@@ -75,6 +103,7 @@ public class AuthService {
 
     public void modifyUserRole(User user, Authority authority) {
         user.setAuthority(authority);
+        user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
     }
 

@@ -1,8 +1,8 @@
 package com.fleta.employee.config;
 
-import com.fleta.employee.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -33,6 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/auth/signup").permitAll() // 이 주소에 대한 요청은 인증없이 접근을 허용하겠다
                 .antMatchers("/api/auth/login").permitAll() // 이 주소에 대한 요청은 인증없이 접근을 허용하겠다
                 .antMatchers("/api/auth/verify/**").hasRole("NOT_PERMITTED")
+                .antMatchers("/api/auth/delete").hasAnyRole("MANAGER", "ADMIN")
                 .antMatchers("/api/user/**").hasAnyRole("USER", "MANAGER", "ADMIN")
                 .antMatchers("/api/manager/**").hasAnyRole("MANAGER", "ADMIN")
                 .antMatchers("/api/admin/**").hasRole("ADMIN")

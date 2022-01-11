@@ -1,0 +1,1 @@
+update user set authority='ROLE_USER' where login_id='user';

@@ -17,8 +17,8 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    public final static long TOKEN_VALIDATION_SECOND = 1000L * 60 * 60; // 1시간
-    public final static long REFRESH_TOKEN_VALIDATION_SECOND = 1000L * 60 * 60 * 24; // 1일
+    public final static long TOKEN_VALIDATION_SECOND = 1L * 60 * 60; // 1시간
+    public final static long REFRESH_TOKEN_VALIDATION_SECOND = 1L * 60 * 60 * 24; // 1일
 
     final static public String ACCESS_TOKEN_NAME = "accessToken";
     final static public String REFRESH_TOKEN_NAME = "refreshToken";
@@ -64,7 +64,7 @@ public class JwtUtil {
         String jwt = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expireTime))
+                .setExpiration(new Date(System.currentTimeMillis() + expireTime * 1000))
                 .signWith(getSigningKey(SECRET_KEY), SignatureAlgorithm.HS256)
                 .compact();
 
