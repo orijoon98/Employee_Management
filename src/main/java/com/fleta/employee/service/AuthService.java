@@ -82,11 +82,13 @@ public class AuthService {
         privateInformationRepository.delete(privateInformation);
     }
 
-    public void sendVerificationMail(User user) {
+    public String sendVerificationMail(User user) {
         String VERIFICATION_LINK = "http://localhost:8080/auth/verify/";
         UUID uuid = UUID.randomUUID();
         redisUtil.setDataExpire(uuid.toString(), user.getLoginId(), 1000L * 60 * 3); // 3분
         emailUtil.sendMail(user.getEmail(), "회원가입 인증메일입니다.", VERIFICATION_LINK + uuid.toString());
+
+        return uuid.toString();
     }
 
     public void verifyEmail(String key) {

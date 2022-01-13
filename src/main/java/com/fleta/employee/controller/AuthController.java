@@ -95,13 +95,13 @@ public class AuthController {
     public ResponseEntity verify(HttpServletRequest request) {
         Cookie token = cookieUtil.getCookie(request, JwtUtil.ACCESS_TOKEN_NAME);
         User user = authService.findByLoginId(jwtUtil.getLoginId(token.getValue()));
-        authService.sendVerificationMail(user);
+        String uuid = authService.sendVerificationMail(user);
 
         return ResponseEntity.status(200).body(
                 ResponseDto.builder()
                         .status(200)
                         .message("인증메일 보내기 성공")
-                        .data(null)
+                        .data(uuid)
                         .build()
         );
     }
